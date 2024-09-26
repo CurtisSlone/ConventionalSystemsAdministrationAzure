@@ -9,7 +9,6 @@ resource "azurerm_network_interface" "win_vm_nic" {
     subnet_id                     = var.subnet_id
     private_ip_address_allocation = "Static"
     private_ip_address            = "10.0.2.24"
-    public_ip_address_id          = azurerm_public_ip.win_vm_pip.id
   }
 
   depends_on = [
@@ -27,14 +26,6 @@ resource "azurerm_network_interface_security_group_association" "nsg_association
   ]
 }
 
-resource "azurerm_public_ip" "win_vm_pip" {
-  name                = "${var.win_vm_name}_pip"
-  location            = var.rg_location
-  resource_group_name = var.rg_name
-  allocation_method   = "Static"
-
-  tags = var.default_tags
-}
 
 resource "azurerm_windows_virtual_machine" "win_vm" {
   name                = var.win_vm_name

@@ -1,5 +1,5 @@
-$compress = @{
-    Path = ".\DSC"
-    DestinationPath = ".\DSC\*.ps1.zip"
+$dcdsccompress = @{
+    Path = ".\DSC\ADConfigDC.ps1"
+    DestinationPath = ".\DSC\ADConfigDC.ps1.zip"
   }
-  Compress-Archive @compress
+  Compress-Archive @dcdsccompress

@@ -26,7 +26,7 @@ resource "azuread_service_principal_password" "azcopy_spn_pass" {
   }
 }
 resource "azurerm_role_assignment" "blob_contributor" {
-  scope = azurerm_storage_account.storage_account.id
+  scope = var.storage_account_id
   role_definition_name = "Storage Blob Data Contributor"
   principal_id = azuread_service_principal.azcopy_spn.id
 }

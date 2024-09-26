@@ -18,6 +18,6 @@ variable "storage_container_name" {
   type = string
 }
 
-variable "application_display_name" {
-  type = string
+variable "whitelisted_ips" {
+  type = list(string)
 }

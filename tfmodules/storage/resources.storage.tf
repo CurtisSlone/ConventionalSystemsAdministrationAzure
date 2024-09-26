@@ -1,8 +1,8 @@
 resource "azurerm_storage_account" "storage_account" {
   #   BASIC
   name = var.storage_account_name
-  resource_group_name = module.resource_group.rg_name
-  location = module.resource_group.rg_location
+  resource_group_name = var.rg_name
+  location = var.rg_location
   account_tier = "Standard"
   account_replication_type = "LRS"
 
@@ -37,22 +37,25 @@ resource "azurerm_storage_account" "storage_account" {
   # ENCRYPTION
   infrastructure_encryption_enabled = true
 
-  # NETWORKING
-  # network_rules {
-  #   default_action = "Allow"
-  #   ip_rules = ["0.0.0.0/32"]
-  # }
-
-  # SAS
-  sas_policy {
-    expiration_period = "356.00:00:00"
-    expiration_action = "Log"
+  network_rules {
+    default_action = "Deny"
+    ip_rules = var.whitelisted_ips
   }
+
 }
+
+resource "azurerm_role_assignment" "storage_account_owner" {
+  scope = azurerm_storage_account.storage_account.id
+  role_definition_name = "Owner"
+  principal_id = data.azuread_client_config.current_client.object_id
+
+  depends_on = [ azurerm_storage_account.storage_account ]
+}
+
 
 resource "azurerm_storage_container" "storage_container" {
   name = var.storage_container_name
   storage_account_name = azurerm_storage_account.storage_account.name
   container_access_type = "private"
-
+  depends_on = [ azurerm_role_assignment.storage_account_owner ]
 }
