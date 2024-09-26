@@ -42,22 +42,29 @@ variable "virtual_network_link_name" {
   type = string
 }
 
-# variable "dc_vm_name" {
-#   type = string
-# }
+variable "dc_vm_name" {
+  type = string
+}
 
-# variable "vnet_name" {
-#   type = string
-# }
+variable "dc_nic_name" {
+  type = string
+}
 
-# variable "dc_nic_name" {
-#   type = string
-# }
+variable "dc_admin_username" {
+  type = string
+}
 
-# variable "dc_vm_disk_name" {
-#   type = string
-# }
+variable "dc_admin_password" {
+  type = string
+}
 
+variable "dc_vm_host_name" {
+  type = string
+}
+
+variable "dc_private_ip_address" {
+  type = string
+}
 # variable "ad_domain_name" {
 #   type = string
 # }

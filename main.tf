@@ -85,3 +85,20 @@ resource "azurerm_bastion_host" "bas" {
     public_ip_address_id = azurerm_public_ip.bas-pip.id
   }
 }
+
+module "dc_win_vm" {
+  source = "./tfmodules/domaincontroller"
+  rg_name = module.resource_group.rg_name
+  rg_location = module.resource_group.rg_location
+  default_tags = var.default_tags
+  win_vm_name = var.dc_vm_name
+  subnet_name = module.domain_vnet.subnets["DomainSubnet"].name
+  subnet_id = module.domain_vnet.subnets["DomainSubnet"].id
+  win_vm_username = var.dc_admin_username
+  win_vm_password = var.dc_admin_password
+  win_vm_nic_name = var.dc_nic_name
+  dc_host_name = var.dc_vm_host_name
+  dc_private_ip_address = var.dc_private_ip_address
+
+  depends_on = [ module.dsc_storage_private_link ]
+}

@@ -8,12 +8,8 @@ resource "azurerm_network_interface" "win_vm_nic" {
     name                          = var.subnet_name
     subnet_id                     = var.subnet_id
     private_ip_address_allocation = "Static"
-    private_ip_address            = "10.0.2.24"
+    private_ip_address            = var.dc_private_ip_address
   }
-
-  depends_on = [
-    azurerm_public_ip.win_vm_pip
-  ]
 }
 
 resource "azurerm_network_interface_security_group_association" "nsg_association" {
@@ -22,7 +18,7 @@ resource "azurerm_network_interface_security_group_association" "nsg_association
 
   depends_on = [
     azurerm_network_interface.win_vm_nic,
-    azurerm_network_security_group.nsg
+    azurerm_network_security_group.dc_nsg
   ]
 }
 
@@ -57,54 +53,53 @@ resource "azurerm_windows_virtual_machine" "win_vm" {
   ]
 }
 
-resource "azurerm_virtual_machine_extension" "dsc_init" {
-  name                       = "dsc-init"
-  virtual_machine_id         = azurerm_windows_virtual_machine.win_vm.id
-  publisher                  = "Microsoft.Compute"
-  type                       = "CustomScriptExtension"
-  type_handler_version       = "1.9"
-  depends_on           = [azurerm_windows_virtual_machine.win_vm]
+# resource "azurerm_virtual_machine_extension" "dsc_init" {
+#   name                       = "dsc-init"
+#   virtual_machine_id         = azurerm_windows_virtual_machine.win_vm.id
+#   publisher                  = "Microsoft.Compute"
+#   type                       = "CustomScriptExtension"
+#   type_handler_version       = "1.9"
+#   depends_on           = [azurerm_windows_virtual_machine.win_vm]
 
-  settings = <<SETTINGS
-    {
-      "commandToExecute": "powershell -encodedCommand ${textencodebase64(file("${path.module}/scripts/DSC-Init.ps1"), "UTF-16LE")}"
-    }
-  SETTINGS
-}
+#   settings = <<SETTINGS
+#     {
+#       "commandToExecute": "powershell -encodedCommand ${textencodebase64(file("${path.module}/scripts/DSC-Init.ps1"), "UTF-16LE")}"
+#     }
+#   SETTINGS
+# }
 
-resource "azurerm_virtual_machine_extension" "dc_dsc_config" {
-  name                 = "dc-dsc-config"
-  virtual_machine_id   = azurerm_windows_virtual_machine.win_vm.id
-  publisher            = "Microsoft.Powershell"
-  type                 = "DSC"
-  type_handler_version = "2.77"
-  depends_on           = [azurerm_virtual_machine_extension.dsc_init]
+# resource "azurerm_virtual_machine_extension" "dc_dsc_config" {
+#   name                 = "dc-dsc-config"
+#   virtual_machine_id   = azurerm_windows_virtual_machine.win_vm.id
+#   publisher            = "Microsoft.Powershell"
+#   type                 = "DSC"
+#   type_handler_version = "2.77"
+#   depends_on           = [azurerm_virtual_machine_extension.dsc_init]
 
 
-  settings           = <<SETTINGS
-            {
-                "WmfVersion": "latest",
-                "configuration": {
-                  "url": "${var.dc_dsc_url}?",
-                  "script": "${var.dc_dsc_file_name}.ps1",
-                  "function": "${var.dc_dsc_file_name}"
-                },
-                "configurationArguments": {
-                  "DomainName": "${var.ad_domain_name}",
-                  "DnsForwarder": "168.63.129.16"
-                }
-            }
-            SETTINGS
+#   settings           = <<SETTINGS
+#             {
+#                 "WmfVersion": "latest",
+#                 "configuration": {
+#                   "url": "${var.dc_dsc_url}",
+#                   "script": "ADConfigDC.ps1",
+#                   "function": "ADConfigDC"
+#                 },
+#                 "configurationArguments": {
+#                   "DomainName": "${var.ad_domain_name}",
+#                   "DnsForwarder": "168.63.129.16"
+#                 }
+#             }
+#             SETTINGS
 
-   protected_settings = <<PROTECTED_SETTINGS
-        {
-            "configurationArguments": {
-                "adminCreds": {
-                    "UserName": "${var.win_vm_username}",
-                    "Password": "${var.win_vm_password}"
-                }
-            },
-            "configurationUrlSasToken": "${var.blob_sas_token}"
-        }
-    PROTECTED_SETTINGS
-}
+#    protected_settings = <<PROTECTED_SETTINGS
+#         {
+#             "configurationArguments": {
+#                 "adminCreds": {
+#                     "UserName": "${var.win_vm_username}",
+#                     "Password": "${var.win_vm_password}"
+#                 }
+#             }
+#         }
+#     PROTECTED_SETTINGS
+# }

@@ -14,19 +14,11 @@ variable "win_vm_name" {
   type = string
 }
 
-variable "vnet_name" {
-  type = string
-}
-
 variable "subnet_name" {
   type = string
 }
 
 variable "subnet_id" {
-  type = string
-}
-
-variable "blob_sas_token" {
   type = string
 }
 
@@ -42,23 +34,23 @@ variable "win_vm_username" {
   type = string
 }
 
-variable "win_vm_data_disk_name" {
-  type = string
-}
+# variable "ad_domain_name" {
+#   type = string
+# }
 
-variable "ad_domain_name" {
-  type = string
-}
+# variable "dc_dsc_url" {
+#   type = string
+# }
 
-variable "dc_dsc_url" {
-  type = string
-}
-
-variable "dc_dsc_file_name" {
-  type = string
-}
+# variable "dc_dsc_file_name" {
+#   type = string
+# }
 
 variable "dc_host_name" {
+  type = string
+}
+
+variable "dc_private_ip_address" {
   type = string
 }
 

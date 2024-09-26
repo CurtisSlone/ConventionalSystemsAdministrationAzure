@@ -1,3 +1,3 @@
-# output "subnets" {
-#   value = module.domain_vnet.subnets
-# }
+output "storager_fqdn" {
+  value = module.dsc_storage_private_link.private_link_fqdn
+}
