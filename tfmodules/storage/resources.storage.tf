@@ -40,6 +40,7 @@ resource "azurerm_storage_account" "storage_account" {
   network_rules {
     default_action = "Deny"
     ip_rules = var.whitelisted_ips
+    virtual_network_subnet_ids = var.whitelisted_subnet
   }
 
 }

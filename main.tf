@@ -22,7 +22,7 @@ module "dsc_storage" {
  storage_account_name = var.dsc_storage_account_name
  storage_container_name = var.dsc_storage_container_name
  whitelisted_ips = var.whitelisted_ips
-
+ whitelisted_subnet = [module.domain_vnet.subnets["DomainSubnet"]]
  depends_on = [ module.domain_vnet ]
 }
 
