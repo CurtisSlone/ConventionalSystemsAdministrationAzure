@@ -14,7 +14,7 @@ resource "azurerm_storage_account" "storage_account" {
   min_tls_version = "TLS1_2"
 
   # NETWORKING
-  public_network_access_enabled = true
+  public_network_access_enabled = false
   routing {
       choice = "MicrosoftRouting"
   }
