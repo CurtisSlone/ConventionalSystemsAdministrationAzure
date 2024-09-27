@@ -12,6 +12,7 @@ resource "azurerm_storage_account" "storage_account" {
   # SECURITY
   shared_access_key_enabled = true
   min_tls_version = "TLS1_2"
+  https_traffic_only_enabled = true
 
   # NETWORKING
   public_network_access_enabled = true
