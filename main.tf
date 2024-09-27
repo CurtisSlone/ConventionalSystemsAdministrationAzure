@@ -35,6 +35,10 @@ resource "azurerm_storage_blob" "dc_dsc_config_blob" {
   depends_on = [ module.dsc_storage ]
 }
 
+#
+# Private Endpoints Do Not Place Nice with DSC Extenstion
+#
+
 module "domain_vnet_dns" {
   source = "./tfmodules/privatednszoneazure"
   rg_name = module.resource_group.rg_name

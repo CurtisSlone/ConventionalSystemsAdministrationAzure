@@ -5,16 +5,21 @@ Set-ExecutionPolicy Unrestricted -Force
 
 
 #
-# Download and trust Root Certs 
+# Disable SSL for now
 #
-Invoke-WebRequest -Uri "https://cacerts.digicert.com/BaltimoreCyberTrustRoot.crt" -OutFile "C:\Users\BaltimoreCyberTrustRoot.crt"
-Invoke-WebRequest -Uri "https://cacerts.digicert.com/DigiCertGlobalRootG2.crt" -OutFile "C:\Users\DigiCertGlobalRootG2.crt"
+add-type @"
+    using System.Net;
+    using System.Security.Cryptography.X509Certificates;
+    public class TrustAllCertsPolicy : ICertificatePolicy {
+        public bool CheckValidationResult(
+            ServicePoint srvPoint, X509Certificate certificate,
+            WebRequest request, int certificateProblem) {
+            return true;
+        }
+    }
+"@
+[System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy
 
-Import-Certificate -FilePath "C:\Users\BaltimoreCyberTrustRoot.crt" -CertStoreLocation Cert:\LocalMachine\Root
-Import-Certificate -FilePath "C:\Users\DigiCertGlobalRootG2.crt" -CertStoreLocation Cert:\LocalMachine\Root
-
-Remove-Item -Path "C:\Users\BaltimoreCyberTrustRoot.crt"
-Remove-Item -Path "C:\Users\DigiCertGlobalRootG2.crt"
 #
 # Install required DSC modules before we get started. 
 #
