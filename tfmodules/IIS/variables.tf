@@ -10,7 +10,7 @@ variable "default_tags" {
   type = map(string)
 }
 
-variable "win_vm_name" {
+variable "iis_vm_name" {
   type = string
 }
 
@@ -22,7 +22,7 @@ variable "subnet_id" {
   type = string
 }
 
-variable "iis_vm_password" {
+variable "iis_admin_password" {
   type = string
 }
 

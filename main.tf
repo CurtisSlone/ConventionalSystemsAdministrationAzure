@@ -61,6 +61,16 @@ resource "azurerm_storage_blob" "dc_server_ou_data_blob" {
   depends_on = [ module.dsc_storage ]
 }
 
+resource "azurerm_storage_blob" "iis_config_blob_url" {
+  name = "IIS-Config.ps1.zip"
+  storage_account_name = module.dsc_storage.storage_account_name
+  storage_container_name = module.dsc_storage.storage_container_name
+  type = "Block"
+  source = "./DSC/IIS-Config.ps1.zip"
+
+  depends_on = [ module.dsc_storage ]
+}
+
 #
 #
 #
@@ -125,3 +135,22 @@ module "dc_vm" {
 # IIS VM
 #
 #
+
+module "dc_vm" {
+  source = "./tfmodules/IIS"
+  rg_name = module.resource_group.rg_name
+  rg_location = module.resource_group.rg_location
+  default_tags = var.default_tags
+  subnet_name = module.domain_vnet.subnets["DomainSubnet"].name
+  subnet_id = module.domain_vnet.subnets["DomainSubnet"].id
+  iis_vm_name = var.iis_vm_name
+  iis_hostname = var.iis_hostname
+  iis_vm_nic_name = var.iis_vm_nic_name
+  iis_private_ip_address = var.iis_private_ip_address
+  iis_vm_username = var.iis_vm_username
+  iis_admin_password = var.iis_admin_password
+  iis_config_blob_url = azurerm_storage_blob.iis_config_blob_url
+  sas_token = data.azurerm_storage_account_sas.blob_container_sas.sas
+
+  depends_on = [ azurerm_storage_blob.dc_dsc_config_blob ]
+} 

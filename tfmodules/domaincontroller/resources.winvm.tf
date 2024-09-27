@@ -136,7 +136,7 @@ resource "azurerm_virtual_machine_extension" "dc_member_servers" {
                   "DomainName": "${var.ad_domain_name}"
                 },
                 "configurationData": {
-                  "url": "${var.dc_server_ou_data_blob_url}${var.sas_token}"
+                  "url": "${var.dc_server_ou_data_blob_url}"
                 }
             }
             SETTINGS
@@ -149,7 +149,8 @@ resource "azurerm_virtual_machine_extension" "dc_member_servers" {
                     "Password": "${var.dc_vm_password}"
                 }
             },
-            "configurationUrlSasToken": "${var.sas_token}"
+            "configurationUrlSasToken": "${var.sas_token}",
+            "configurationDataUrlSasToken": "${var.sas_token}"
         }
     PROTECTED_SETTINGS
 }

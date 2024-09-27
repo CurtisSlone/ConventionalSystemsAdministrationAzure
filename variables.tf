@@ -74,6 +74,26 @@ variable "sas_expiry" {
   type = string
 }
 
-# variable "whitelisted_ips" {
-#   type = string
-# }
+variable "iis_admin_password" {
+  type = string
+}
+
+variable "iis_vm_nic_name" {
+  type = string
+}
+
+variable "iis_vm_username" {
+  type = string
+}
+
+variable "iis_hostname" {
+    type = string
+}
+
+variable "iis_private_ip_address" {
+  type = string
+}
+
+variable "iis_vm_name" {
+  type = string
+}
