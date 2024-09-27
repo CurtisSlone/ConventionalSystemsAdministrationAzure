@@ -12,7 +12,7 @@ resource "azurerm_storage_account" "storage_account" {
   # SECURITY
   shared_access_key_enabled = true
   min_tls_version = "TLS1_2"
-  https_traffic_only_enabled = true
+  # https_traffic_only_enabled = true
 
   # NETWORKING
   public_network_access_enabled = true
@@ -47,13 +47,13 @@ resource "azurerm_storage_account" "storage_account" {
 
 }
 
-resource "azurerm_role_assignment" "storage_account_owner" {
-  scope = azurerm_storage_account.storage_account.id
-  role_definition_name = "Owner"
-  principal_id = data.azuread_client_config.current_client.object_id
+# resource "azurerm_role_assignment" "storage_account_owner" {
+#   scope = azurerm_storage_account.storage_account.id
+#   role_definition_name = "Owner"
+#   principal_id = data.azuread_client_config.current_client.object_id
 
-  depends_on = [ azurerm_storage_account.storage_account ]
-}
+#   depends_on = [ azurerm_storage_account.storage_account ]
+# }
 
 
 resource "azurerm_storage_container" "storage_container" {
