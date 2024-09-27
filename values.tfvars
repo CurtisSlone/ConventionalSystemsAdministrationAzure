@@ -14,7 +14,7 @@ subnet_address_prefixes = {
 dsc_storage_account_name = "binsparkdscaccount"
 dsc_storage_container_name = "binsparkdsccontainer"
 
-private_dns_name = "domainnet"
+private_dns_name = "privatelink.blob.core.windows.net"
 virtual_network_link_name = "domainnetlink"
 
 dc_vm_name = "BINSPARKDC"

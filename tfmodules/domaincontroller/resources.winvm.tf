@@ -91,7 +91,7 @@ resource "azurerm_virtual_machine_extension" "dc_dsc_config" {
             {
                 "WmfVersion": "latest",
                 "configuration": {
-                  "url": "${var.dc_dsc_url}",
+                  "url": "${var.dc_dsc_url}/ADConfigDC.ps1.zip",
                   "script": "ADConfigDC.ps1",
                   "function": "ADConfigDC"
                 },

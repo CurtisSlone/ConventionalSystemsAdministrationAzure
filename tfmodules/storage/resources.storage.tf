@@ -38,9 +38,9 @@ resource "azurerm_storage_account" "storage_account" {
   infrastructure_encryption_enabled = true
 
   network_rules {
-    default_action = "Allow"
-    # ip_rules = var.whitelisted_ips
-    # virtual_network_subnet_ids = var.whitelisted_subnet
+    default_action = "Deny"
+    ip_rules = var.whitelisted_ips
+    virtual_network_subnet_ids = var.whitelisted_subnet
     
   }
 
