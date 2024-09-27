@@ -5,3 +5,4 @@ output "private_dns_zone_id" {
 output "zone_name" {
     value = azurerm_private_dns_zone.azurerm_private_dns_zone.name
 }
+

@@ -31,7 +31,7 @@ variable "dsc_storage_container_name" {
 }
 
 variable "whitelisted_ips" {
-  type = list(string)
+  type = string
 }
 
 variable "private_dns_name" {
@@ -65,6 +65,15 @@ variable "dc_vm_host_name" {
 variable "dc_private_ip_address" {
   type = string
 }
-# variable "ad_domain_name" {
-#   type = string
-# }
+
+variable "ad_domain_name" {
+  type = string
+}
+
+variable "sas_start" {
+  type = string
+}
+
+variable "sas_expiry" {
+  type = string
+}

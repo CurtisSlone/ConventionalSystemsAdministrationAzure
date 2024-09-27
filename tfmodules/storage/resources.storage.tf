@@ -14,7 +14,7 @@ resource "azurerm_storage_account" "storage_account" {
   min_tls_version = "TLS1_2"
 
   # NETWORKING
-  public_network_access_enabled = false
+  public_network_access_enabled = true
   routing {
       choice = "MicrosoftRouting"
   }
@@ -38,9 +38,10 @@ resource "azurerm_storage_account" "storage_account" {
   infrastructure_encryption_enabled = true
 
   network_rules {
-    default_action = "Deny"
-    ip_rules = var.whitelisted_ips
-    virtual_network_subnet_ids = var.whitelisted_subnet
+    default_action = "Allow"
+    # ip_rules = var.whitelisted_ips
+    # virtual_network_subnet_ids = var.whitelisted_subnet
+    
   }
 
 }

@@ -21,9 +21,8 @@ module "dsc_storage" {
  default_tags = module.resource_group.rg_tags
  storage_account_name = var.dsc_storage_account_name
  storage_container_name = var.dsc_storage_container_name
- whitelisted_ips = var.whitelisted_ips
- whitelisted_subnet = [module.domain_vnet.subnets["DomainSubnet"]]
- depends_on = [ module.domain_vnet ]
+ whitelisted_ips = [var.whitelisted_ips]
+ whitelisted_subnet = [module.domain_vnet.subnets["DomainSubnet"].id]
 }
 
 resource "azurerm_storage_blob" "dc_dsc_config_blob" {
@@ -99,6 +98,9 @@ module "dc_win_vm" {
   win_vm_nic_name = var.dc_nic_name
   dc_host_name = var.dc_vm_host_name
   dc_private_ip_address = var.dc_private_ip_address
+  ad_domain_name = var.ad_domain_name
+  dc_dsc_url = azurerm_storage_blob.dc_dsc_config_blob.url
+  sas_token = data.azurerm_storage_account_sas.blob_container_sas.sas
 
-  depends_on = [ module.dsc_storage_private_link ]
-}
+  depends_on = [ azurerm_storage_blob.dc_dsc_config_blob ]
+} 

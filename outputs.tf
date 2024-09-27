@@ -1,7 +1,8 @@
-output "storage_fqdn" {
-  value = module.dsc_storage_private_link.private_link_fqdn
+output "account_sas" {
+    value = data.azurerm_storage_account_sas.blob_container_sas.sas
+    sensitive = true
 }
 
-output "storage_blob_url" {
-    value = azurerm_storage_blob.dc_dsc_config_blob.url
-}
+
+
+

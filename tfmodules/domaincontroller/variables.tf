@@ -34,23 +34,23 @@ variable "win_vm_username" {
   type = string
 }
 
-# variable "ad_domain_name" {
-#   type = string
-# }
+variable "ad_domain_name" {
+  type = string
+}
 
-# variable "dc_dsc_url" {
-#   type = string
-# }
-
-# variable "dc_dsc_file_name" {
-#   type = string
-# }
+variable "dc_dsc_url" {
+  type = string
+}
 
 variable "dc_host_name" {
   type = string
 }
 
 variable "dc_private_ip_address" {
+  type = string
+}
+
+variable "sas_token" {
   type = string
 }
 
@@ -67,16 +67,16 @@ variable "dc_nsg_security_rules" {
   }))
 
   default = [
-    {
-    name                       = "AllowRDP"
-    priority                   = 100
-    direction                  = "Inbound"
-    access                     = "Deny"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "3389"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
+  #   {
+  #   name                       = "AllowRDP"
+  #   priority                   = 100
+  #   direction                  = "Inbound"
+  #   access                     = "Deny"
+  #   protocol                   = "Tcp"
+  #   source_port_range          = "*"
+  #   destination_port_range     = "3389"
+  #   source_address_prefix      = "*"
+  #   destination_address_prefix = "*"
+  # }
   ]
 }
