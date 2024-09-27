@@ -21,9 +21,15 @@ module "dsc_storage" {
  default_tags = module.resource_group.rg_tags
  storage_account_name = var.dsc_storage_account_name
  storage_container_name = var.dsc_storage_container_name
-#  whitelisted_ips = [var.whitelisted_ips]
-#  whitelisted_subnet = [module.domain_vnet.subnets["DomainSubnet"].id]
 }
+
+
+#
+#
+#
+# DSC Configuration Blobs
+#
+#
 
 resource "azurerm_storage_blob" "dc_dsc_config_blob" {
   name = "DC-ConfigAD.ps1.zip"
@@ -56,36 +62,11 @@ resource "azurerm_storage_blob" "dc_server_ou_data_blob" {
 }
 
 #
-# Private Endpoints Do Not Place Nice with DSC Extenstion
 #
-
-# module "domain_vnet_dns" {
-#   source = "./tfmodules/privatednszoneazure"
-#   rg_name = module.resource_group.rg_name
-#   private_dns_name = var.private_dns_name
-#   vnet_id = module.domain_vnet.vnet_id
-#   virtual_network_link_name = var.virtual_network_link_name
-
-#   depends_on = [ module.dsc_storage ]
-# }
-
-# module "dsc_storage_private_link" {
-#   source = "./tfmodules/privatelink"
-#   rg_name = module.resource_group.rg_name
-#   rg_location = module.resource_group.rg_location
-#   subnet_id = module.domain_vnet.subnets["DomainSubnet"].id
-
-#   private_endpoint_name = "dsc-storage-endpoint"
-#   private_connection_name = "dsc-storage-connection"
-#   private_connection_resource_id = module.dsc_storage.storage_account_id
-#   subresources_name = ["blob"]
-#   private_dns_name = module.domain_vnet_dns.zone_name
-#   private_dns_zone_id = [module.domain_vnet_dns.private_dns_zone_id]
-#   a_record_name = "dscstorageaccount"
-#   a_record_zone_name = module.domain_vnet_dns.zone_name
-
-#   depends_on = [ module.domain_vnet_dns ]
-# }
+#
+# Bastion Host
+#
+#
 
 resource "azurerm_public_ip" "bas-pip" {
   name = "bas-public-ip"
@@ -109,7 +90,14 @@ resource "azurerm_bastion_host" "bas" {
   }
 }
 
-module "dc_win_vm" {
+#
+#
+#
+# Domain Controller VM
+#
+#
+
+module "dc_vm" {
   source = "./tfmodules/domaincontroller"
   rg_name = module.resource_group.rg_name
   rg_location = module.resource_group.rg_location
@@ -130,3 +118,10 @@ module "dc_win_vm" {
 
   depends_on = [ azurerm_storage_blob.dc_dsc_config_blob ]
 } 
+
+#
+#
+#
+# IIS VM
+#
+#
