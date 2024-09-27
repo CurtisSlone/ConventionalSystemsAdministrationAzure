@@ -103,8 +103,8 @@ module "dc_win_vm" {
   dc_host_name = var.dc_vm_host_name
   dc_private_ip_address = var.dc_private_ip_address
   ad_domain_name = var.ad_domain_name
-  # dc_dsc_url = azurerm_storage_blob.dc_dsc_config_blob.url
-  dc_dsc_url = "https://${var.dsc_storage_account_name}.${module.domain_vnet_dns.zone_name}"
+  dc_dsc_url = azurerm_storage_blob.dc_dsc_config_blob.url
+  # dc_dsc_url = "https://${var.dsc_storage_account_name}.${module.domain_vnet_dns.zone_name}"
   sas_token = data.azurerm_storage_account_sas.blob_container_sas.sas
 
   depends_on = [ azurerm_storage_blob.dc_dsc_config_blob ]

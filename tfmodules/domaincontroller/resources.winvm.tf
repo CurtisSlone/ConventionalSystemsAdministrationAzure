@@ -78,39 +78,39 @@ resource "azurerm_virtual_machine_extension" "dsc_init" {
   SETTINGS
 }
 
-# resource "azurerm_virtual_machine_extension" "dc_dsc_config" {
-#   name                 = "dc-dsc-config"
-#   virtual_machine_id   = azurerm_windows_virtual_machine.win_vm.id
-#   publisher            = "Microsoft.Powershell"
-#   type                 = "DSC"
-#   type_handler_version = "2.77"
-#   depends_on           = [azurerm_virtual_machine_extension.dsc_init]
+resource "azurerm_virtual_machine_extension" "dc_dsc_config" {
+  name                 = "dc-dsc-config"
+  virtual_machine_id   = azurerm_windows_virtual_machine.win_vm.id
+  publisher            = "Microsoft.Powershell"
+  type                 = "DSC"
+  type_handler_version = "2.77"
+  depends_on           = [azurerm_virtual_machine_extension.dsc_init]
 
 
-#   settings           = <<SETTINGS
-#             {
-#                 "WmfVersion": "latest",
-#                 "configuration": {
-#                   "url": "${var.dc_dsc_url}/ADConfigDC.ps1.zip",
-#                   "script": "ADConfigDC.ps1",
-#                   "function": "ADConfigDC"
-#                 },
-#                 "configurationArguments": {
-#                   "DomainName": "${var.ad_domain_name}",
-#                   "DnsForwarder": "168.63.129.16"
-#                 }
-#             }
-#             SETTINGS
+  settings           = <<SETTINGS
+            {
+                "WmfVersion": "latest",
+                "configuration": {
+                  "url": "${var.dc_dsc_url}/ADConfigDC.ps1.zip",
+                  "script": "ADConfigDC.ps1",
+                  "function": "ADConfigDC"
+                },
+                "configurationArguments": {
+                  "DomainName": "${var.ad_domain_name}",
+                  "DnsForwarder": "168.63.129.16"
+                }
+            }
+            SETTINGS
 
-#    protected_settings = <<PROTECTED_SETTINGS
-#         {
-#             "configurationArguments": {
-#                 "adminCreds": {
-#                     "UserName": "${var.win_vm_username}",
-#                     "Password": "${var.win_vm_password}"
-#                 }
-#             },
-#             "configurationUrlSasToken": "${var.sas_token}"
-#         }
-#     PROTECTED_SETTINGS
-# }
+   protected_settings = <<PROTECTED_SETTINGS
+        {
+            "configurationArguments": {
+                "adminCreds": {
+                    "UserName": "${var.win_vm_username}",
+                    "Password": "${var.win_vm_password}"
+                }
+            },
+            "configurationUrlSasToken": "${var.sas_token}"
+        }
+    PROTECTED_SETTINGS
+}
