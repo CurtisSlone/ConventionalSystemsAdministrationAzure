@@ -1,5 +1,14 @@
-$dcdsccompress = @{
-    Path = ".\DSC\ADConfigDC.ps1"
-    DestinationPath = ".\DSC\ADConfigDC.ps1.zip"
+$DSCFileArray = @(
+  @{
+    Path = ".\DSC\DC-ConfigAD.ps1"
+    DestinationPath = ".\DSC\DC-ConfigAD.ps1.zip"
+  },
+  @{
+    Path = ".\DSC\DC-ConfigServerOU.ps1"
+    DestinationPath = ".\DSC\DC-ConfigServerOU.ps1.zip"
   }
-  Compress-Archive @dcdsccompress
+  )
+
+  foreach ($file in $DSCFileArray){
+    Compress-Archive @file
+  }

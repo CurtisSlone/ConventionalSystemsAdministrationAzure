@@ -1,4 +1,4 @@
-﻿configuration ADConfigDC
+﻿configuration DC-ConfigAD
 {
    param
    (

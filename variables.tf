@@ -30,10 +30,6 @@ variable "dsc_storage_container_name" {
   type = string
 }
 
-variable "whitelisted_ips" {
-  type = string
-}
-
 variable "private_dns_name" {
   type = string
 }
@@ -77,3 +73,7 @@ variable "sas_start" {
 variable "sas_expiry" {
   type = string
 }
+
+# variable "whitelisted_ips" {
+#   type = string
+# }

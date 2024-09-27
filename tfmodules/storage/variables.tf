@@ -18,10 +18,10 @@ variable "storage_container_name" {
   type = string
 }
 
-variable "whitelisted_ips" {
-  type = list(string)
-}
+# variable "whitelisted_ips" {
+#   type = list(string)
+# }
 
-variable "whitelisted_subnet" {
-  type = list(string)
-}
+# variable "whitelisted_subnet" {
+#   type = list(string)
+# }

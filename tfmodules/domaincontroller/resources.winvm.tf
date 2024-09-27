@@ -7,8 +7,8 @@ resource "azurerm_public_ip" "dc-vm-pip" {
   sku = "Standard"
 }
 
-resource "azurerm_network_interface" "win_vm_nic" {
-  name                = var.win_vm_nic_name
+resource "azurerm_network_interface" "dc_vm_nic" {
+  name                = var.dc_vm_nic_name
   location            = var.rg_location
   resource_group_name = var.rg_name
 
@@ -23,27 +23,27 @@ resource "azurerm_network_interface" "win_vm_nic" {
 }
 
 resource "azurerm_network_interface_security_group_association" "nsg_association" {
-  network_interface_id      = azurerm_network_interface.win_vm_nic.id
+  network_interface_id      = azurerm_network_interface.dc_vm_nic.id
   network_security_group_id = azurerm_network_security_group.dc_nsg.id
 
   depends_on = [
-    azurerm_network_interface.win_vm_nic,
+    azurerm_network_interface.dc_vm_nic,
     azurerm_network_security_group.dc_nsg
   ]
 }
 
 
-resource "azurerm_windows_virtual_machine" "win_vm" {
-  name                = var.win_vm_name
+resource "azurerm_windows_virtual_machine" "dc_vm" {
+  name                = var.dc_vm_name
   location            = var.rg_location
   resource_group_name = var.rg_name
   size                = "Standard_DS1_v2"
   computer_name       = var.dc_host_name
-  admin_username      = var.win_vm_username
-  admin_password      = var.win_vm_password
+  admin_username      = var.dc_vm_username
+  admin_password      = var.dc_vm_password
   patch_mode          = "AutomaticByPlatform"
   network_interface_ids = [
-    azurerm_network_interface.win_vm_nic.id
+    azurerm_network_interface.dc_vm_nic.id
   ]
 
   os_disk {
@@ -59,28 +59,28 @@ resource "azurerm_windows_virtual_machine" "win_vm" {
   }
 
   depends_on = [
-    azurerm_network_interface.win_vm_nic
+    azurerm_network_interface.dc_vm_nic
   ]
 }
 
 resource "azurerm_virtual_machine_extension" "dsc_init" {
   name                       = "dsc-init"
-  virtual_machine_id         = azurerm_windows_virtual_machine.win_vm.id
+  virtual_machine_id         = azurerm_windows_virtual_machine.dc_vm.id
   publisher                  = "Microsoft.Compute"
   type                       = "CustomScriptExtension"
   type_handler_version       = "1.9"
-  depends_on           = [azurerm_windows_virtual_machine.win_vm]
+  depends_on           = [azurerm_windows_virtual_machine.dc_vm]
 
   settings = <<SETTINGS
     {
-      "commandToExecute": "powershell -encodedCommand ${textencodebase64(file("${path.module}/../../adminscripts/DSC-Init.ps1"), "UTF-16LE")}"
+      "commandToExecute": "powershell -encodedCommand ${textencodebase64(file("${path.module}/../../adminscripts/DC-DSC-Init.ps1"), "UTF-16LE")}"
     }
   SETTINGS
 }
 
 resource "azurerm_virtual_machine_extension" "dc_dsc_config" {
   name                 = "dc-dsc-config"
-  virtual_machine_id   = azurerm_windows_virtual_machine.win_vm.id
+  virtual_machine_id   = azurerm_windows_virtual_machine.dc_vm.id
   publisher            = "Microsoft.Powershell"
   type                 = "DSC"
   type_handler_version = "2.77"
@@ -91,9 +91,9 @@ resource "azurerm_virtual_machine_extension" "dc_dsc_config" {
             {
                 "WmfVersion": "latest",
                 "configuration": {
-                  "url": "${var.dc_dsc_url}/ADConfigDC.ps1.zip",
-                  "script": "ADConfigDC.ps1",
-                  "function": "ADConfigDC"
+                  "url": "${var.dc_config_ad_blob_url}",
+                  "script": "DC-ConfigAD.ps1",
+                  "function": "DC-ConfigAD"
                 },
                 "configurationArguments": {
                   "DomainName": "${var.ad_domain_name}",
@@ -106,8 +106,47 @@ resource "azurerm_virtual_machine_extension" "dc_dsc_config" {
         {
             "configurationArguments": {
                 "adminCreds": {
-                    "UserName": "${var.win_vm_username}",
-                    "Password": "${var.win_vm_password}"
+                    "UserName": "${var.dc_vm_username}",
+                    "Password": "${var.dc_vm_password}"
+                }
+            },
+            "configurationUrlSasToken": "${var.sas_token}"
+        }
+    PROTECTED_SETTINGS
+}
+
+resource "azurerm_virtual_machine_extension" "dc_member_servers" {
+  name                 = "dc-config-server-ou"
+  virtual_machine_id   = azurerm_windows_virtual_machine.dc_vm.id
+  publisher            = "Microsoft.Powershell"
+  type                 = "DSC"
+  type_handler_version = "2.77"
+  depends_on           = [azurerm_virtual_machine_extension.dc_dsc_config]
+
+
+  settings           = <<SETTINGS
+            {
+                "WmfVersion": "latest",
+                "configuration": {
+                  "url": "${var.dc_config_server_ou_blob_url}$",
+                  "script": "DC-ConfigServerOU.ps1",
+                  "function": "DC-ConfigServerOU"
+                },
+                "configurationArguments": {
+                  "DomainName": "${var.ad_domain_name}"
+                },
+                "configurationData": {
+                  "url": "${var.dc_server_ou_data_blob_url}${var.sas_token}"
+                }
+            }
+            SETTINGS
+ 
+   protected_settings = <<PROTECTED_SETTINGS
+        {
+            "configurationArguments": {
+                "adminCreds": {
+                    "UserName": "${var.dc_vm_username}",
+                    "Password": "${var.dc_vm_password}"
                 }
             },
             "configurationUrlSasToken": "${var.sas_token}"

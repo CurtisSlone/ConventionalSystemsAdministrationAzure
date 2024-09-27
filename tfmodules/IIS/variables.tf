@@ -10,7 +10,7 @@ variable "default_tags" {
   type = map(string)
 }
 
-variable "dc_vm_name" {
+variable "win_vm_name" {
   type = string
 }
 
@@ -22,39 +22,27 @@ variable "subnet_id" {
   type = string
 }
 
-variable "dc_vm_password" {
+variable "iis_vm_password" {
   type = string
 }
 
-variable "dc_vm_nic_name" {
+variable "iis_vm_nic_name" {
   type = string
 }
 
-variable "dc_vm_username" {
+variable "iis_vm_username" {
   type = string
 }
 
-variable "ad_domain_name" {
-  type = string
+variable "iis_config_blob_url" {
+    type = string
 }
 
-variable "dc_config_ad_blob_url" {
-  type = string
+variable "iis_hostname" {
+    type = string
 }
 
-variable "dc_config_server_ou_blob_url" {
-  type = string
-}
-
-variable "dc_server_ou_data_blob_url" {
-  type = string
-}
-
-variable "dc_host_name" {
-  type = string
-}
-
-variable "dc_private_ip_address" {
+variable "iis_private_ip_address" {
   type = string
 }
 
@@ -62,7 +50,7 @@ variable "sas_token" {
   type = string
 }
 
-variable "dc_nsg_security_rules" {
+variable "iis_nsg_security_rules" {
   type = list(object({
     name = string
     priority = number

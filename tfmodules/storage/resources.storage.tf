@@ -39,10 +39,9 @@ resource "azurerm_storage_account" "storage_account" {
   infrastructure_encryption_enabled = true
 
   network_rules {
-    default_action = "Deny"
-    ip_rules = var.whitelisted_ips
-    virtual_network_subnet_ids = var.whitelisted_subnet
-    
+    default_action = "Allow"
+    # ip_rules = var.whitelisted_ips
+    # virtual_network_subnet_ids = var.whitelisted_subnet
   }
 
 }
@@ -60,5 +59,5 @@ resource "azurerm_storage_container" "storage_container" {
   name = var.storage_container_name
   storage_account_name = azurerm_storage_account.storage_account.name
   container_access_type = "private"
-  depends_on = [ azurerm_role_assignment.storage_account_owner ]
+  # depends_on = [ azurerm_role_assignment.storage_account_owner ]
 }
