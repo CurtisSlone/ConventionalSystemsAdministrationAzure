@@ -9,7 +9,7 @@ data "azurerm_storage_account_sas" "blob_container_sas"{
     expiry = var.sas_expiry
 
     resource_types {
-    service   = true
+    service   = false
     container = true
     object    = true
     }
@@ -31,6 +31,8 @@ data "azurerm_storage_account_sas" "blob_container_sas"{
         tag     = false
         filter  = false
     }
+
+    depends_on = [ module.dsc_storage ]
     
 }
 

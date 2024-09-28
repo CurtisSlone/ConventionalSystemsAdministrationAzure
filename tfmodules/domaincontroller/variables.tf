@@ -42,14 +42,6 @@ variable "dc_config_ad_blob_url" {
   type = string
 }
 
-variable "dc_config_server_ou_blob_url" {
-  type = string
-}
-
-variable "dc_server_ou_data_blob_url" {
-  type = string
-}
-
 variable "dc_host_name" {
   type = string
 }

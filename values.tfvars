@@ -13,8 +13,8 @@ subnet_address_prefixes = {
 
 dsc_storage_account_name = "binsparkdscaccount"
 dsc_storage_container_name = "binsparkdsccontainer"
-sas_start = "2024-09-27T00:00:00Z"
-sas_expiry = "2024-09-28T00:00:00Z"
+sas_start = "2024-09-28T00:00:00Z"
+sas_expiry = "2024-09-30T00:00:00Z"
 
 private_dns_name = "privatelink.blob.core.windows.net"
 virtual_network_link_name = "domainnetlink"

@@ -13,8 +13,8 @@
 }
 
 resource "azurerm_network_interface_security_group_association" "nsg_association" {
-  network_interface_id      = azurerm_network_interface.iis_vm_nic
-  network_security_group_id = azurerm_network_security_group.iis_nsg
+  network_interface_id      = azurerm_network_interface.iis_vm_nic.id
+  network_security_group_id = azurerm_network_security_group.iis_nsg.id
 
   depends_on = [
     azurerm_network_interface.iis_vm_nic,
@@ -53,13 +53,11 @@ resource "azurerm_windows_virtual_machine" "iis_vm" {
 }
 
 resource "azurerm_virtual_machine_extension" "iis_dsc_config" {
-  name                 = "dc-dsc-config"
+  name                 = "iis-dsc-config"
   virtual_machine_id   = azurerm_windows_virtual_machine.iis_vm.id
   publisher            = "Microsoft.Powershell"
   type                 = "DSC"
   type_handler_version = "2.77"
-  depends_on           = [azurerm_virtual_machine_extension.dsc_init]
-
 
   settings           = <<SETTINGS
             {
@@ -74,7 +72,7 @@ resource "azurerm_virtual_machine_extension" "iis_dsc_config" {
 
    protected_settings = <<PROTECTED_SETTINGS
         {
-            "configurationUrlSasToken": "${var.sas_token}",
+            "configurationUrlSasToken": "${var.sas_token}"
         }
     PROTECTED_SETTINGS
 }

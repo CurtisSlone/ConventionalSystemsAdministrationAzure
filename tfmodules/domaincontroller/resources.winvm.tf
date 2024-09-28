@@ -95,7 +95,7 @@ resource "azurerm_virtual_machine_extension" "dc_dsc_config" {
                   "script": "DC-ConfigAD.ps1",
                   "function": "DC-ConfigAD"
                 },
-                "configurationArguments": {
+                 "configurationArguments": {
                   "DomainName": "${var.ad_domain_name}",
                   "DnsForwarder": "168.63.129.16"
                 }
@@ -105,52 +105,16 @@ resource "azurerm_virtual_machine_extension" "dc_dsc_config" {
    protected_settings = <<PROTECTED_SETTINGS
         {
             "configurationArguments": {
-                "adminCreds": {
+                "Credential": {
+                    "UserName": "${var.dc_vm_username}",
+                    "Password": "${var.dc_vm_password}"
+                },
+                "SafeModePassword": {
                     "UserName": "${var.dc_vm_username}",
                     "Password": "${var.dc_vm_password}"
                 }
             },
             "configurationUrlSasToken": "${var.sas_token}"
-        }
-    PROTECTED_SETTINGS
-}
-
-resource "azurerm_virtual_machine_extension" "dc_member_servers" {
-  name                 = "dc-config-server-ou"
-  virtual_machine_id   = azurerm_windows_virtual_machine.dc_vm.id
-  publisher            = "Microsoft.Powershell"
-  type                 = "DSC"
-  type_handler_version = "2.77"
-  depends_on           = [azurerm_virtual_machine_extension.dc_dsc_config]
-
-
-  settings           = <<SETTINGS
-            {
-                "WmfVersion": "latest",
-                "configuration": {
-                  "url": "${var.dc_config_server_ou_blob_url}$",
-                  "script": "DC-ConfigServerOU.ps1",
-                  "function": "DC-ConfigServerOU"
-                },
-                "configurationArguments": {
-                  "DomainName": "${var.ad_domain_name}"
-                },
-                "configurationData": {
-                  "url": "${var.dc_server_ou_data_blob_url}"
-                }
-            }
-            SETTINGS
- 
-   protected_settings = <<PROTECTED_SETTINGS
-        {
-            "configurationArguments": {
-                "adminCreds": {
-                    "UserName": "${var.dc_vm_username}",
-                    "Password": "${var.dc_vm_password}"
-                }
-            },
-            "configurationUrlSasToken": "${var.sas_token}",
-            "configurationDataUrlSasToken": "${var.sas_token}"
         }
     PROTECTED_SETTINGS
 }

@@ -1,48 +1,58 @@
-﻿configuration DC-ConfigAD
+﻿Configuration DC-ConfigAD
 {
-   param
-   (
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $Credential,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.PSCredential]
+        $SafeModePassword,
+
         [Parameter(Mandatory)]
         [String]$DomainName,
         
         [Parameter(Mandatory)]
         [String]$DnsForwarder,
 
-        [Parameter(Mandatory)]
-        [System.Management.Automation.PSCredential]$Admincreds,
-        
         [Int]$RetryCount=20,
         [Int]$RetryIntervalSec=30
     )
+ 
+    Import-DscResource -ModuleName PSDesiredStateConfiguration
+    Import-DscResource -ModuleName ActiveDirectoryDsc
+    Import-DscResource -ModuleName NetworkingDsc
+    Import-DscResource -ModuleName ComputerManagementDSC
 
-    Import-DscResource -ModuleName xActiveDirectory, xStorage, xNetworking, ComputerManagementDSC
-    
-    [System.Management.Automation.PSCredential ]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainName}\$($Admincreds.UserName)", $Admincreds.Password)
-    $Interface = Get-NetAdapter | Where-Object Name -Like "Ethernet*" | Select-Object -First 1
-    $InterfaceAlias = $($Interface.Name)
-
-    Node localhost
+    node 'localhost'
     {
+        $Interface = Get-NetAdapter | Where-Object Name -Like "Ethernet*" | Select-Object -First 1
+        $InterfaceAlias = $($Interface.Name)
+        
         LocalConfigurationManager
         {
             ConfigurationMode = 'ApplyOnly'
             RebootNodeIfNeeded = $true
+            ActionAfterReboot = "ContinueConfiguration"
         }
         
-        WindowsFeature DNS
+        WindowsFeature 'DNS'
         {
             Ensure = "Present"
             Name = "DNS"
         }
         
-        WindowsFeature DnsTools
+        WindowsFeature 'DnsTools'
         {
             Ensure = "Present"
             Name = "RSAT-DNS-Server"
             DependsOn = "[WindowsFeature]DNS"
         }
-        
-        Script SetDNSForwarder
+
+        Script 'SetDNSForwarder'
         {
 
             # 
@@ -122,39 +132,36 @@
             TestScript = { $false }
             DependsOn = "[WindowsFeature]DNSTools"
         }
-      
-        WindowsFeature ADTools
+
+        WindowsFeature 'ADDS'
         {
-            Ensure = "Present"
-            Name = "RSAT-AD-Tools"
+            Name   = 'AD-Domain-Services'
+            Ensure = 'Present'
             DependsOn = "[WindowsFeature]DNS"
         }
-        
-        WindowsFeature GPOTools
+
+        WindowsFeature 'RSAT'
+        {
+            Name   = 'RSAT-AD-PowerShell'
+            Ensure = 'Present'
+            DependsOn = "[WindowsFeature]DNS"
+        }
+
+        WindowsFeature 'GPOTools'
         {
             Ensure = "Present"
             Name = "GPMC"
             DependsOn = "[WindowsFeature]DNS"
         }
 
-        WindowsFeature DFSTools
+        WindowsFeature 'DFSTools'
         {
             Ensure = "Present"
             Name = "RSAT-DFS-Mgmt-Con"
             DependsOn = "[WindowsFeature]DNS"
         }
-        
-        WindowsFeature ADDSInstall
-        {
-            Ensure = "Present"
-            Name = "AD-Domain-Services"
-            DependsOn = "[WindowsFeature]DNS"
-        }
-        
-        #
-        # make sure the machine looks to itself for DNS now.
-        #
-        xDnsServerAddress DnsServerAddress
+
+        DnsServerAddress DnsServerAddress
         {
             Address        = '127.0.0.1'
             InterfaceAlias = $InterfaceAlias
@@ -162,21 +169,86 @@
             DependsOn = "[WindowsFeature]DNS"
         }
 
-        xADDomain FirstDS
+        ADDomain 'DomainPromotion'
+        {
+            DomainName                    = $DomainName
+            Credential                    = $Credential
+            SafemodeAdministratorPassword = $SafeModePassword
+            ForestMode                    = 'WinThreshold'
+            DependsOn = @("[WindowsFeature]ADDS", "[DnsServerAddress]DnsServerAddress", "[Script]SetDNSForwarder")
+        }
+
+        PendingReboot RebootAfterInstalling
+        {
+            Name = 'RebootAfterInstalling'
+            DependsOn =  "[ADDomain]DomainPromotion"
+        }
+
+        WaitForADDomain DomainWait
         {
             DomainName = $DomainName
-            DomainAdministratorCredential = $DomainCreds
-            SafemodeAdministratorPassword = $DomainCreds
-            DependsOn = @("[WindowsFeature]ADDSInstall", "[xDnsServerAddress]DnsServerAddress", "[Script]SetDNSForwarder")
+            RestartCount = 2
+            DependsOn = "[PendingReboot]RebootAfterInstalling"
         }
+
+        $OUData = @(
+                @{
+                    OUName = "Servers"
+                    OUPath = "OU=Computers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+                },
+                @{
+                    OUName = "WindowsServers"
+                    OUPath = "OU=Servers,OU=Computers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+                },
+                @{
+                    OUName = "LinuxServers"
+                    OUPath = "OU=Servers,OU=Computers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+                },
+                @{
+                    OUName = "Workstations"
+                    OUPath = "OU=Computers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+                }
+            )
+
+            ADOrganizationalUnit 'ComputersOU'
+            {
+                Name = 'Computers'
+                Path = "DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+                Ensure = 'Present'
+                DependsOn = "[WaitForADDomain]DomainWait"
+            }
+            Foreach ($ou in $OUData) {
+                ADOrganizationalUnit $ou.OUName {
+                    Name = $ou.OUName
+                    Path = $ou.OUPath
+                    Ensure = "Present"
+                    DependsOn = "[ADOrganizationalUnit]ComputersOU"
+                }
+            }
+
+
+             # Staging Memberservers
+        ADComputer IISServer {
+            ComputerName = "IIS"
+            Path = "OU=Windows Servers,OU=Servers,OU=Computers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+            PsDscRunAsCredential = $Credential
+            DependsOn = "[ADOrganizationalUnit]WindowsServers"
+        }
+
+        ADComputer LinuxWebServer {
+            ComputerName = "LinuxWeb"
+            Path = "OU=Linux Servers,OU=Servers,OU=Computers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+            PsDscRunAsCredential = $Credential
+            DependsOn = "[ADOrganizationalUnit]LinuxServers"
+        }
+
+        ADComputer LinuxCAServer {
+            ComputerName = "LinuxCA"
+            Path = "OU=Linux Servers,OU=Servers,OU=Computers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+            PsDscRunAsCredential = $Credential
+            DependsOn = "[ADOrganizationalUnit]LinuxServers"
+        }
+
         
-        #
-        # Force the reboot; the automatic reboot stopped working somewhere in 2019... 
-        #
-        PendingReboot RebootAfterInstallingAD
-        {
-            Name = 'RebootAfterInstallingAD'
-            DependsOn = "[xADDomain]FirstDS"
-        }
     }
 }
