@@ -37,6 +37,8 @@
             ConfigurationMode = 'ApplyOnly'
             RebootNodeIfNeeded = $true
             ActionAfterReboot = "ContinueConfiguration"
+            # CerticicateId = $certForDSC.Thumbprint
+
         }
         
         WindowsFeature 'DNS'
@@ -192,63 +194,80 @@
         }
 
         $OUData = @(
-                @{
-                    OUName = "Servers"
-                    OUPath = "OU=Computers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
-                },
-                @{
-                    OUName = "WindowsServers"
-                    OUPath = "OU=Servers,OU=Computers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
-                },
-                @{
-                    OUName = "LinuxServers"
-                    OUPath = "OU=Servers,OU=Computers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
-                },
-                @{
-                    OUName = "Workstations"
-                    OUPath = "OU=Computers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
-                }
-            )
+            @{
+                OUName = "MemberServers"
+                OUPath = "DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+            },
+            @{
+                OUName = "UnprivilegedUsers"
+                OUPath = "DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+            },
+            @{
+                OUName = "PrivilegedUsers"
+                OUPath = "DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+            },
+            @{
+                OUName = "DomainAdmins"
+                OUPath = "OU=PrivilegedUsers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+            },
+            @{
+                OUName = "SystemAdmins"
+                OUPath = "OU=PrivilegedUsers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+            },
+            @{
+                OUName = "WindowsServers"
+                OUPath = "OU=MemberServers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+            },
+            @{
+                OUName = "LinuxServers"
+                OUPath = "OU=MemberServers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+            },
+            @{
+                OUName = "Workstations"
+                OUPath = "DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+            }
+        )
 
-            ADOrganizationalUnit 'ComputersOU'
+        Foreach ($ou in $OUData) {
+            ADOrganizationalUnit $ou.OUName {
+                Name = $ou.OUName
+                Path = $ou.OUPath
+                Ensure = "Present"
+                DependsOn ="[WaitForADDomain]DomainWait"
+            }
+        }
+
+        $ComputeData = @(
+            @{
+                CDName = "IIS01"
+                CDPath = "OU=WindowsServers,OU=MemberServers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+                CDDnsHostName = "IIS01.$($DomainName)"
+                CDDependsOn = "[ADOrganizationalUnit]WindowsServers"
+            },
+            @{
+                CDName = "LinuxWeb01"
+                CDPath = "OU=LinuxServers,OU=MemberServers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+                CDDnsHostName = "LinuxWeb01.$($DomainName)"
+                CDDependsOn = "[ADOrganizationalUnit]LinuxServers"
+            },
+            @{
+                CDName = "LinuxCA01"
+                CDPath = "OU=LinuxServers,OU=MemberServers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+                CDDnsHostName = "LinuxCA01.$($DomainName)"
+                CDDependsOn = "[ADOrganizationalUnit]LinuxServers"
+            }
+        )
+
+        Foreach ($compute in $ComputeData) {
+            ADComputer $compute.CDName
             {
-                Name = 'Computers'
-                Path = "DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
-                Ensure = 'Present'
-                DependsOn = "[WaitForADDomain]DomainWait"
+                ComputerName = $compute.CDName
+                Path = $compute.CDPath
+                # DnsHostName = $compute.CDDnsHostName
+                Credential = $Credential
+
+                DependsOn = $compute.CDDependsOn
             }
-            Foreach ($ou in $OUData) {
-                ADOrganizationalUnit $ou.OUName {
-                    Name = $ou.OUName
-                    Path = $ou.OUPath
-                    Ensure = "Present"
-                    DependsOn = "[ADOrganizationalUnit]ComputersOU"
-                }
-            }
-
-
-             # Staging Memberservers
-        ADComputer IISServer {
-            ComputerName = "IIS"
-            Path = "OU=Windows Servers,OU=Servers,OU=Computers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
-            PsDscRunAsCredential = $Credential
-            DependsOn = "[ADOrganizationalUnit]WindowsServers"
-        }
-
-        ADComputer LinuxWebServer {
-            ComputerName = "LinuxWeb"
-            Path = "OU=Linux Servers,OU=Servers,OU=Computers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
-            PsDscRunAsCredential = $Credential
-            DependsOn = "[ADOrganizationalUnit]LinuxServers"
-        }
-
-        ADComputer LinuxCAServer {
-            ComputerName = "LinuxCA"
-            Path = "OU=Linux Servers,OU=Servers,OU=Computers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
-            PsDscRunAsCredential = $Credential
-            DependsOn = "[ADOrganizationalUnit]LinuxServers"
-        }
-
-        
+        }       
     }
 }
