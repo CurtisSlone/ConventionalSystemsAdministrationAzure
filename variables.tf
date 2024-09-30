@@ -86,6 +86,10 @@ variable "iis_vm_username" {
   type = string
 }
 
+variable "iis_hostname" {
+    type = string
+}
+
 variable "iis_private_ip_address" {
   type = string
 }
