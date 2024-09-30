@@ -11,7 +11,7 @@ Configuration IIS-Config {
     
             File WebsiteContent {
                 Ensure = 'Present'
-                SourcePath = 'c:\test\index.htm'
+                SourcePath = 'c:\index.html'
                 DestinationPath = 'c:\inetpub\wwwroot'
             }
         }

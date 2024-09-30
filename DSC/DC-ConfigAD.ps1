@@ -316,10 +316,10 @@
             }
         )
 
-        $DNCap = $DomainName.substring(0,1).toupper()+$DomainName.substring(1).tolower()
+        $DNCap = $DomainName.Split('.')[0].substring(0,1).toupper()+$DomainName.Split('.')[0].substring(1).tolower()
 
         Foreach ($user in $ADUsers) {
-            ADUser "$($DNCap)\$($user.ADUName)"
+            ADUser "$($user.ADUName)"
             {
                 UserName = $user.ADUName
                 DisplayName = $user.ADUDisplayName
@@ -343,7 +343,7 @@
                     "$($DomainName.Split('.')[0])\jerry.smith",
                     "$($DomainName.Split('.')[0])\gary.howard"
                 )
-                ADGDependsOn = "[ADUser] $($DNCap)\curtis.slone"
+                ADGDependsOn = "[ADUser]curtis.slone"
             },
             @{
                 ADGName = "SecGroup_DomainAdmins"
@@ -352,7 +352,7 @@
                     "$($DomainName.Split('.')[0])\curtis.slone.da",
                     "$($DomainName.Split('.')[0])\gary.howard.da"
                 )
-                ADGDependsOn = "[ADUser] $($DNCap)\curtis.slone.da"
+                ADGDependsOn = "[ADUser]curtis.slone.da"
             },
             @{
                 ADGName = "SecGroup_SystemAdmins"
@@ -361,7 +361,7 @@
                     "$($DomainName.Split('.')[0])\curtis.slone.sa",
                     "$($DomainName.Split('.')[0])\jerry.smith.sa"
                 )
-                ADGDependsOn = "[ADUser] $($DNCap)\curtis.slone.sa"
+                ADGDependsOn = "[ADUser]curtis.slone.sa"
             },
             @{
                 ADGName = "SecGroup_PowerShellUSers"
@@ -369,7 +369,7 @@
                 ADGMembers = @(
                     "$($DomainName.Split('.')[0])\curtis.slone.sa"
                 )
-                ADGDependsOn = "[ADUser] $($DNCap)\curtis.slone.sa"
+                ADGDependsOn = "[ADUser]curtis.slone.sa"
             }
         )
 

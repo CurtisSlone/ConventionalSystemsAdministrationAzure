@@ -27,7 +27,7 @@ dc_private_ip_address = "10.0.2.24"
 ad_domain_name         = "binarysparklabs.com"
 
 iis_vm_name = "BINSPARKIIS"
-iis_hostname = "BINSPARKIIS"
+iis_hostname = "IIS01"
 iis_vm_nic_name = "binsparkiisnic"
 iis_vm_username = "binwinadmin"
 iis_private_ip_address = "10.0.2.25"

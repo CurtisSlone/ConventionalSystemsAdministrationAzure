@@ -58,27 +58,27 @@ resource "azurerm_storage_blob" "iis_config_blob" {
 #
 #
 
-# resource "azurerm_public_ip" "bas-pip" {
-#   name = "bas-public-ip"
-#   location = module.resource_group.rg_location
-#   resource_group_name = module.resource_group.rg_name
-#   allocation_method = "Static"
-#   sku = "Standard"
-# }
+resource "azurerm_public_ip" "bas-pip" {
+  name = "bas-public-ip"
+  location = module.resource_group.rg_location
+  resource_group_name = module.resource_group.rg_name
+  allocation_method = "Static"
+  sku = "Standard"
+}
 
-# resource "azurerm_bastion_host" "bas" {
-#   name = "domain-bas"
-#   location = module.resource_group.rg_location
-#   resource_group_name = module.resource_group.rg_name
+resource "azurerm_bastion_host" "bas" {
+  name = "domain-bas"
+  location = module.resource_group.rg_location
+  resource_group_name = module.resource_group.rg_name
 
-#   depends_on = [ module.domain_vnet ]
+  depends_on = [ module.domain_vnet ]
 
-#   ip_configuration {
-#     name = "domain-bas-ip-config"
-#     subnet_id = module.domain_vnet.subnets["AzureBastionSubnet"].id
-#     public_ip_address_id = azurerm_public_ip.bas-pip.id
-#   }
-# }
+  ip_configuration {
+    name = "domain-bas-ip-config"
+    subnet_id = module.domain_vnet.subnets["AzureBastionSubnet"].id
+    public_ip_address_id = azurerm_public_ip.bas-pip.id
+  }
+}
 
 #
 #
