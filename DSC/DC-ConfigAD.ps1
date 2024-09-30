@@ -317,17 +317,19 @@
         )
 
         $DNCap = $DomainName.substring(0,1).toupper()+$DomainName.substring(1).tolower()
-        
+
         Foreach ($user in $ADUsers) {
             ADUser "$($DNCap)\$($user.ADUName)"
             {
-             UserName = $user.ADUName
-             DisplayName = $user.ADUDisplayName
-             CommonName = $user.ADUName
-             DomainName = "$($DomainName)"
-             Path = $user.ADUPath
-             Ensure = "Present"
-             DependsOn = $user.ADUDependsOn
+                UserName = $user.ADUName
+                DisplayName = $user.ADUDisplayName
+                Password = $Credential
+                PasswordNeverResets = $true
+                CommonName = $user.ADUName
+                DomainName = "$($DomainName)"
+                Path = $user.ADUPath
+                Ensure = "Present"
+                DependsOn = $user.ADUDependsOn
             }
 
         }
@@ -341,7 +343,7 @@
                     "$($DomainName.Split('.')[0])\jerry.smith",
                     "$($DomainName.Split('.')[0])\gary.howard"
                 )
-                ADGDependsOn = "[ADUser]CurtisSlone"
+                ADGDependsOn = "[ADUser] $($DNCap)\curtis.slone"
             },
             @{
                 ADGName = "SecGroup_DomainAdmins"
@@ -350,7 +352,7 @@
                     "$($DomainName.Split('.')[0])\curtis.slone.da",
                     "$($DomainName.Split('.')[0])\gary.howard.da"
                 )
-                ADGDependsOn = "[ADUser]CurtisSloneDA"
+                ADGDependsOn = "[ADUser] $($DNCap)\curtis.slone.da"
             },
             @{
                 ADGName = "SecGroup_SystemAdmins"
@@ -359,7 +361,7 @@
                     "$($DomainName.Split('.')[0])\curtis.slone.sa",
                     "$($DomainName.Split('.')[0])\jerry.smith.sa"
                 )
-                ADGDependsOn = "[ADUser]CurtisSloneSA"
+                ADGDependsOn = "[ADUser] $($DNCap)\curtis.slone.sa"
             },
             @{
                 ADGName = "SecGroup_PowerShellUSers"
@@ -367,7 +369,7 @@
                 ADGMembers = @(
                     "$($DomainName.Split('.')[0])\curtis.slone.sa"
                 )
-                ADGDependsOn = "[ADUser]CurtisSloneSA"
+                ADGDependsOn = "[ADUser] $($DNCap)\curtis.slone.sa"
             }
         )
 
