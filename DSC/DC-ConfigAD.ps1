@@ -268,6 +268,122 @@
 
                 DependsOn = $compute.CDDependsOn
             }
-        }       
+        }
+        
+
+        $ADUsers = @(
+            @{
+                ADUName = "curtis.slone"
+                ADUDisplayName = "Curtis Slone"
+                ADUPath = "OU=UnprivilegedUsers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+                ADUDependsOn = "[ADOrganizationalUnit]UnprivilegedUsers"
+            },
+            @{
+                ADUName = "jerry.smith"
+                ADUDisplayName = "Jerry Smith"
+                ADUPath = "OU=UnprivilegedUsers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+                ADUDependsOn = "[ADOrganizationalUnit]UnprivilegedUsers"
+            },
+            @{
+                ADUName = "gary.howard"
+                ADUDisplayName = "Gary Howard"
+                ADUPath = "OU=UnprivilegedUsers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+                ADUDependsOn = "[ADOrganizationalUnit]UnprivilegedUsers"
+            },
+            @{
+                ADUName = "curtis.slone.da"
+                ADUDisplayName = "Curtis Slone Domain Admin"
+                ADUPath = "OU=DomainAdmins,OU=PrivilegedUsers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+                ADUDependsOn = "[ADOrganizationalUnit]DomainAdmins"
+            },
+            @{
+                ADUName = "gary.howard.da"
+                ADUDisplayName = "Gary Howard Domain Admin"
+                ADUPath = "OU=DomainAdmins,OU=PrivilegedUsers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+                ADUDependsOn = "[ADOrganizationalUnit]DomainAdmins"
+            },
+            @{
+                ADUName = "curtis.slone.sa"
+                ADUDisplayName = "Curtis Slone System Admin"
+                ADUPath = "OU=SystemAdmins,OU=PrivilegedUsers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+                ADUDependsOn = "[ADOrganizationalUnit]SystemAdmins"
+            },
+            @{
+                ADUName = "jerry.smith.sa"
+                ADUDisplayName = "Jerry Smith System Admin"
+                ADUPath = "OU=SystemAdmins,OU=PrivilegedUsers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+                ADUDependsOn = "[ADOrganizationalUnit]SystemAdmins"
+            }
+        )
+
+        $DNCap = $DomainName.substring(0,1).toupper()+$DomainName.substring(1).tolower()
+        
+        Foreach ($user in $ADUsers) {
+            ADUser "$($DNCap)\$($user.ADUName)"
+            {
+             UserName = $user.ADUName
+             DisplayName = $user.ADUDisplayName
+             CommonName = $user.ADUName
+             DomainName = "$($DomainName)"
+             Path = $user.ADUPath
+             Ensure = "Present"
+             DependsOn = $user.ADUDependsOn
+            }
+
+        }
+        
+        $ADGroups = @(
+            @{
+                ADGName = "SecGroup_UnprivilegedUsers"
+                ADGPath = "OU=UnprivilegedUsers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+                ADGMembers = @(
+                    "$($DomainName.Split('.')[0])\curtis.slone",
+                    "$($DomainName.Split('.')[0])\jerry.smith",
+                    "$($DomainName.Split('.')[0])\gary.howard"
+                )
+                ADGDependsOn = "[ADUser]CurtisSlone"
+            },
+            @{
+                ADGName = "SecGroup_DomainAdmins"
+                ADGPath = "OU=DomainAdmins,OU=PrivilegedUsers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+                ADGMembers = @(
+                    "$($DomainName.Split('.')[0])\curtis.slone.da",
+                    "$($DomainName.Split('.')[0])\gary.howard.da"
+                )
+                ADGDependsOn = "[ADUser]CurtisSloneDA"
+            },
+            @{
+                ADGName = "SecGroup_SystemAdmins"
+                ADGPath = "OU=SystemAdmins,OU=PrivilegedUsers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+                ADGMembers = @(
+                    "$($DomainName.Split('.')[0])\curtis.slone.sa",
+                    "$($DomainName.Split('.')[0])\jerry.smith.sa"
+                )
+                ADGDependsOn = "[ADUser]CurtisSloneSA"
+            },
+            @{
+                ADGName = "SecGroup_PowerShellUSers"
+                ADGPath = "OU=PrivilegedUsers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+                ADGMembers = @(
+                    "$($DomainName.Split('.')[0])\curtis.slone.sa"
+                )
+                ADGDependsOn = "[ADUser]CurtisSloneSA"
+            }
+        )
+
+        Foreach ($group in $ADGroups) {
+            ADGroup $group.ADGName
+            {
+                GroupName = $group.ADGName
+                GroupScope = "DomainLocal"
+                Category = "Security"
+                Path = $group.ADGPath
+                MembershipAttribute = 'SamAccountName'
+                Members = $group.ADGMembers
+                DisplayName = $group.ADGNAme
+                Ensure = "Present"
+                DependsOn = $group.ADGDependsOn
+            }
+        }
     }
 }
