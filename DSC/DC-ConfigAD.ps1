@@ -215,6 +215,10 @@
                 OUPath = "OU=PrivilegedUsers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
             },
             @{
+                OUName = "WorkstationAdmins"
+                OUPath = "OU=PrivilegedUsers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+            },
+            @{
                 OUName = "WindowsServers"
                 OUPath = "OU=MemberServers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
             },
@@ -313,11 +317,15 @@
                 ADUDisplayName = "Jerry Smith System Admin"
                 ADUPath = "OU=SystemAdmins,OU=PrivilegedUsers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
                 ADUDependsOn = "[ADOrganizationalUnit]SystemAdmins"
+            },
+            @{
+                ADUName = "curtis.slone.ws"
+                ADUDisplayName = "Curtis Slone Workstation Admin"
+                ADUPath = "OU=WorkstationAdmins,OU=PrivilegedUsers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+                ADUDependsOn = "[ADOrganizationalUnit]WorkstationAdmins"
             }
         )
-
-        $DNCap = $DomainName.Split('.')[0].substring(0,1).toupper()+$DomainName.Split('.')[0].substring(1).tolower()
-
+        
         Foreach ($user in $ADUsers) {
             ADUser "$($user.ADUName)"
             {
@@ -353,6 +361,14 @@
                     "$($DomainName.Split('.')[0])\gary.howard.da"
                 )
                 ADGDependsOn = "[ADUser]curtis.slone.da"
+            },
+            @{
+                ADGName = "SecGroup_WorkstationAdmins"
+                ADGPath = "OU=WorkstationAdmins,OU=PrivilegedUsers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+                ADGMembers = @(
+                    "$($DomainName.Split('.')[0])\curtis.slone.ws"
+                )
+                ADGDependsOn = "[ADUser]curtis.slone.ws"
             },
             @{
                 ADGName = "SecGroup_SystemAdmins"
