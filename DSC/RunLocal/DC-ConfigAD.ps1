@@ -101,17 +101,11 @@
             DependsOn = @("[WindowsFeature]ADDS", "[DnsServerAddress]DnsServerAddress")
         }
 
-        PendingReboot RebootAfterInstalling
-        {
-            Name = 'RebootAfterInstalling'
-            DependsOn =  "[ADDomain]DomainPromotion"
-        }
-
         WaitForADDomain DomainWait
         {
             DomainName = $DomainName
             RestartCount = 2
-            DependsOn = "[PendingReboot]RebootAfterInstalling"
+            DependsOn = "[ADDomain]DomainPromotion"
         }
 
         $OUData = @(
