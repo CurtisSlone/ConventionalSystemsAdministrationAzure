@@ -142,6 +142,13 @@
             DependsOn = "[WindowsFeature]DNS"
         }
 
+        WindowsFeature ADTools
+        {
+            Ensure = "Present"
+            Name = "RSAT-AD-Tools"
+            DependsOn = "[WindowsFeature]DNS"
+        }
+
         WindowsFeature 'RSAT'
         {
             Name   = 'RSAT-AD-PowerShell'
@@ -325,7 +332,7 @@
                 ADUDependsOn = "[ADOrganizationalUnit]WorkstationAdmins"
             }
         )
-        
+
         Foreach ($user in $ADUsers) {
             ADUser "$($user.ADUName)"
             {

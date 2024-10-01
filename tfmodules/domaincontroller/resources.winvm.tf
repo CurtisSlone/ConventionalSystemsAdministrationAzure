@@ -73,7 +73,7 @@ resource "azurerm_virtual_machine_extension" "dsc_init" {
 
   settings = <<SETTINGS
     {
-      "commandToExecute": "powershell -encodedCommand ${textencodebase64(file("${path.module}/../../adminscripts/DC-DSC-Init.ps1"), "UTF-16LE")}"
+      "commandToExecute": "powershell -encodedCommand ${textencodebase64(file("${path.module}/../../adminscripts/DC-Init.ps1"), "UTF-16LE")}"
     }
   SETTINGS
 }
