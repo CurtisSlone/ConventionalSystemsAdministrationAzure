@@ -1,4 +1,11 @@
 Configuration IIS-Config {
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $SourcePath
+    )
 
         Import-DscResource -ModuleName PsDesiredStateConfiguration
     
@@ -11,7 +18,7 @@ Configuration IIS-Config {
     
             File WebsiteContent {
                 Ensure = 'Present'
-                SourcePath = 'c:\index.html'
+                SourcePath = $SourcePath
                 DestinationPath = 'c:\inetpub\wwwroot'
             }
         }

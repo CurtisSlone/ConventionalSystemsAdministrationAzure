@@ -410,5 +410,15 @@
                 DependsOn = $group.ADGDependsOn
             }
         }
+
+        # Script 'Init_GPO' {
+        #     SetScript = 
+        #     {
+
+        #     }
+        #     GetScript =  { @{} }
+        #     TestScript = { $false }
+        #     DependsOn = "[ADGroup]SecGroup_PowerShellUSers"
+        # }
     }
 }

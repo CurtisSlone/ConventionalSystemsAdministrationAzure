@@ -66,6 +66,9 @@ resource "azurerm_virtual_machine_extension" "iis_dsc_config" {
                   "url": "${var.iis_config_blob_url}",
                   "script": "IIS-Config.ps1",
                   "function": "IIS-Config"
+                },
+                "configurationArguments": {
+                  "SourcePath": "C:\\index.html"
                 }
             }
             SETTINGS
