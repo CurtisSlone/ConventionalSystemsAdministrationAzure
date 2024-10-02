@@ -259,7 +259,7 @@
         
         $ADGroups = @(
             @{
-                ADGName = "SecGroup_UnprivilegedUsers"
+                ADGName = "sg_UnprivilegedUsers"
                 ADGPath = "OU=UnprivilegedUsers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
                 ADGMembers = @(
                     "$($DomainName.Split('.')[0])\curtis.slone",
@@ -269,7 +269,7 @@
                 ADGDependsOn = "[ADUser]curtis.slone"
             },
             @{
-                ADGName = "SecGroup_DomainAdmins"
+                ADGName = "sg_DomainAdmins"
                 ADGPath = "OU=DomainAdmins,OU=PrivilegedUsers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
                 ADGMembers = @(
                     "$($DomainName.Split('.')[0])\curtis.slone.da",
@@ -278,7 +278,7 @@
                 ADGDependsOn = "[ADUser]curtis.slone.da"
             },
             @{
-                ADGName = "SecGroup_WorkstationAdmins"
+                ADGName = "sg_WorkstationAdmins"
                 ADGPath = "OU=WorkstationAdmins,OU=PrivilegedUsers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
                 ADGMembers = @(
                     "$($DomainName.Split('.')[0])\curtis.slone.ws"
@@ -286,7 +286,7 @@
                 ADGDependsOn = "[ADUser]curtis.slone.ws"
             },
             @{
-                ADGName = "SecGroup_SystemAdmins"
+                ADGName = "sg_SystemAdmins"
                 ADGPath = "OU=SystemAdmins,OU=PrivilegedUsers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
                 ADGMembers = @(
                     "$($DomainName.Split('.')[0])\curtis.slone.sa",
@@ -295,7 +295,7 @@
                 ADGDependsOn = "[ADUser]curtis.slone.sa"
             },
             @{
-                ADGName = "SecGroup_PowerShellUSers"
+                ADGName = "sg_PowerShellUSers"
                 ADGPath = "OU=PrivilegedUsers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
                 ADGMembers = @(
                     "$($DomainName.Split('.')[0])\curtis.slone.sa"
@@ -326,7 +326,7 @@
         #     }
         #     GetScript =  { @{} }
         #     TestScript = { $false }
-        #     DependsOn = "[ADGroup]SecGroup_PowerShellUSers"
+        #     DependsOn = "[ADGroup]sg_PowerShellUSers"
         # }
     }
 }
@@ -336,9 +336,6 @@ $ConfigData = @{
         @{
             NodeName = 'localhost'
             PSDscAllowPlainTextPassword = $true
-            $cred = Get-Credential
-            $sfpass = Get-Credential
-            $dn = Read-Host "Enter Domain Name"
         }
     )
 }
