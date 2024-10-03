@@ -49,8 +49,12 @@ Configuration WINCA-ConfigRoot
             Credential = $Credential
             CAType = 'EnterpriseRootCA'
             DependsOn = '[WindowsFeature] ADCS-Cert-Authority'
+            CryptoProviderName = "RSA#Microsoft Software Key Storage Provider"
+            Keylength = 2048
+            HashAlgorithmName = "SHA256"
             CACommonName = "$($DomainName.Split('.')[0]) Root CA"
             CADistinguishedNameSuffix = "DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+            ValidityPeriod = "0,0,0,0,25"
         }
 
     }
