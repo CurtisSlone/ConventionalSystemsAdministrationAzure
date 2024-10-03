@@ -63,6 +63,13 @@
             DependsOn = "[WindowsFeature]DNS"
         }
 
+        WindowsFeature ADTools
+        {
+            Ensure = "Present"
+            Name = "RSAT-AD-Tools"
+            DependsOn = "[WindowsFeature]DNS"
+        }
+
         WindowsFeature 'RSAT'
         {
             Name   = 'RSAT-AD-PowerShell'
@@ -164,16 +171,28 @@
                 CDDependsOn = "[ADOrganizationalUnit]WindowsServers"
             },
             @{
-                CDName = "LinuxWeb01"
+                CDName = "LINWEB01"
                 CDPath = "OU=LinuxServers,OU=MemberServers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
-                CDDnsHostName = "LinuxWeb01.$($DomainName)"
+                CDDnsHostName = "LINWEB01.$($DomainName)"
                 CDDependsOn = "[ADOrganizationalUnit]LinuxServers"
             },
             @{
-                CDName = "LinuxCA01"
+                CDName = "LINCA01"
                 CDPath = "OU=LinuxServers,OU=MemberServers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
-                CDDnsHostName = "LinuxCA01.$($DomainName)"
+                CDDnsHostName = "LINCA01.$($DomainName)"
                 CDDependsOn = "[ADOrganizationalUnit]LinuxServers"
+            },
+            @{
+                CDName = "WS01"
+                CDPath = "OU=Workstations,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+                CDDnsHostName = "WS01.$($DomainName)"
+                CDDependsOn = "[ADOrganizationalUnit]Workstations"
+            },
+            @{
+                CDName = "WINCA01"
+                CDPath = "OU=WindowsServers,OU=MemberServers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+                CDDnsHostName = "WINCA01.$($DomainName)"
+                CDDependsOn = "[ADOrganizationalUnit]WindowsServer"
             }
         )
 

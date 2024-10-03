@@ -1,11 +1,11 @@
 $DSCFileArray = @(
   @{
-    Path = ".\DSC\DC-ConfigAD.ps1"
-    DestinationPath = ".\DSC\DC-ConfigAD.ps1.zip"
+    Path = ".\DSC\RunLocal\"
+    DestinationPath = "RunLocal.zip"
   },
   @{
-    Path = ".\DSC\IIS-Config.ps1"
-    DestinationPath = ".\DSC\IIS-Config.ps1.zip"
+    Path = ".\adminscripts\"
+    DestinationPath = ".\adminscripts.zip"
   }
   )
 
