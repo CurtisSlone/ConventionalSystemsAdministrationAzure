@@ -63,13 +63,6 @@
             DependsOn = "[WindowsFeature]DNS"
         }
 
-        WindowsFeature ADTools
-        {
-            Ensure = "Present"
-            Name = "RSAT-AD-Tools"
-            DependsOn = "[WindowsFeature]DNS"
-        }
-
         WindowsFeature 'RSAT'
         {
             Name   = 'RSAT-AD-PowerShell'
