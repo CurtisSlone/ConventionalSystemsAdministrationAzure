@@ -55,6 +55,8 @@ Configuration WINCA-ConfigRoot
             CACommonName = "$($DomainName.Split('.')[0]) Root CA"
             CADistinguishedNameSuffix = "DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
             ValidityPeriod = "0,0,0,0,25"
+            LogDirectory = "C:\Windows\system32\CertLog"
+
         }
 
     }
