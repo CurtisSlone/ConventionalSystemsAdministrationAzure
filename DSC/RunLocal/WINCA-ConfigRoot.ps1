@@ -37,7 +37,7 @@ Configuration WINCA-ConfigRoot
             # CADistinguishedNameSuffix = "DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
             # ValidityPeriodUnits = 25
             # ValidityPeriod = "Years"
-            # LogDirectory = "C:\Windows\system32\CertLog"
+            # LogDirectory = "C:\Windows\system32\CertLog\"
         }
 
     }
