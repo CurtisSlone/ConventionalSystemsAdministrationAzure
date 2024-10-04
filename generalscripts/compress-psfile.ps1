@@ -4,7 +4,7 @@ $DSCFileArray = @(
     DestinationPath = "RunLocal.zip"
   },
   @{
-    Path = ".\adminscripts\"
+    Path = ".\adminscripts\WINCA\"
     DestinationPath = ".\adminscripts.zip"
   }
   )

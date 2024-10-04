@@ -331,15 +331,6 @@
             }
         }
 
-        # Script 'Init_GPO' {
-        #     SetScript = 
-        #     {
-
-        #     }
-        #     GetScript =  { @{} }
-        #     TestScript = { $false }
-        #     DependsOn = "[ADGroup]sg_PowerShellUSers"
-        # }
     }
 }
 
