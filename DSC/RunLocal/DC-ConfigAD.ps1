@@ -13,7 +13,10 @@
         $SafeModePassword,
 
         [Parameter(Mandatory)]
-        [String]$DomainName,  
+        [String]$DomainName,
+
+        [Parameter(Mandatory)]
+        [String]$IPAddress,
 
         [Int]$RetryCount=20,
         [Int]$RetryIntervalSec=30
@@ -36,6 +39,21 @@
             ActionAfterReboot = "ContinueConfiguration"
             # CerticicateId = $certForDSC.Thumbprint
 
+        }
+
+        IPAddress 'internalnetwork'
+        {
+            IPAddress = $IPAddress
+            InterfaceAlias = $InterfaceAlias
+            AddressFamily = "IPv4"
+        }
+
+        DnsServerAddress 'DNSServer'
+        {
+            InterfaceAlias = $InterfaceAlias
+            AddressFamily = "IPv4"
+            Address = "10.0.2.24"
+            DependsOn = "[IPAddress]internalnetwork"
         }
 
         Computer 'hostname'{
@@ -157,35 +175,41 @@
         }
 
         $ComputeData = @(
+            # @{
+            #     CDName = "IIS01"
+            #     CDPath = "OU=WindowsServers,OU=MemberServers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+            #     CDDnsHostName = "IIS01.$($DomainName)"
+            #     CDDependsOn = "[ADOrganizationalUnit]WindowsServers"
+            # },
+            # @{
+            #     CDName = "LINWEB01"
+            #     CDPath = "OU=LinuxServers,OU=MemberServers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+            #     CDDnsHostName = "LINWEB01.$($DomainName)"
+            #     CDDependsOn = "[ADOrganizationalUnit]LinuxServers"
+            # },
+            # @{
+            #     CDName = "LINCA01"
+            #     CDPath = "OU=LinuxServers,OU=MemberServers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+            #     CDDnsHostName = "LINCA01.$($DomainName)"
+            #     CDDependsOn = "[ADOrganizationalUnit]LinuxServers"
+            # },
+            # @{
+            #     CDName = "WS01"
+            #     CDPath = "OU=Workstations,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+            #     CDDnsHostName = "WS01.$($DomainName)"
+            #     CDDependsOn = "[ADOrganizationalUnit]Workstations"
+            # },
             @{
-                CDName = "IIS01"
+                CDName = "WINROOTCA01"
                 CDPath = "OU=WindowsServers,OU=MemberServers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
-                CDDnsHostName = "IIS01.$($DomainName)"
+                CDDnsHostName = "WINROOTCA01.$($DomainName)"
                 CDDependsOn = "[ADOrganizationalUnit]WindowsServers"
             },
             @{
-                CDName = "LINWEB01"
-                CDPath = "OU=LinuxServers,OU=MemberServers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
-                CDDnsHostName = "LINWEB01.$($DomainName)"
-                CDDependsOn = "[ADOrganizationalUnit]LinuxServers"
-            },
-            @{
-                CDName = "LINCA01"
-                CDPath = "OU=LinuxServers,OU=MemberServers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
-                CDDnsHostName = "LINCA01.$($DomainName)"
-                CDDependsOn = "[ADOrganizationalUnit]LinuxServers"
-            },
-            @{
-                CDName = "WS01"
-                CDPath = "OU=Workstations,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
-                CDDnsHostName = "WS01.$($DomainName)"
-                CDDependsOn = "[ADOrganizationalUnit]Workstations"
-            },
-            @{
-                CDName = "WINCA01"
+                CDName = "WINSUBCA01"
                 CDPath = "OU=WindowsServers,OU=MemberServers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
-                CDDnsHostName = "WINCA01.$($DomainName)"
-                CDDependsOn = "[ADOrganizationalUnit]WindowsServer"
+                CDDnsHostName = "WINSUBCA01.$($DomainName)"
+                CDDependsOn = "[ADOrganizationalUnit]WindowsServers"
             }
         )
 
@@ -343,4 +367,4 @@ $ConfigData = @{
     )
 }
 
-DC-ConfigAD -Credential $cred -SafeModePassword $sfpass -DomainName $dn -ConfigurationData $ConfigData
+DC-ConfigAD -Credential $cred -SafeModePassword $sfpass -DomainName $dn -IPAddress $ip -ConfigurationData $ConfigData

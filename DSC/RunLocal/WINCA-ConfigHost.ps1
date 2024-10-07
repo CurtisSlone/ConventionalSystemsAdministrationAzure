@@ -1,4 +1,4 @@
-Configuration WINCA-ConfigRoot
+Configuration WINCA-ConfigHost
 {
 
     param
@@ -7,7 +7,11 @@ Configuration WINCA-ConfigRoot
         [String]$IPAddress,
 
         [Parameter(Mandatory)]
-        [String]$HostName
+        [String]$HostName,
+
+        [Parameter(Mandatory)]
+        [String]$DNSIp
+
     )
     Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName ComputerManagementDSC
@@ -37,7 +41,7 @@ Configuration WINCA-ConfigRoot
         {
             InterfaceAlias = $InterfaceAlias
             AddressFamily = "IPv4"
-            Address = "10.0.2.24"
+            Address = $DNSIp
             DependsOn = "[IPAddress]internalnetwork"
         }
 
@@ -66,4 +70,4 @@ $ConfigData = @{
     )
 }
 
-WINCA-ConfigRoot -IPAddress $ip -HostName $hn -ConfigurationData $ConfigData
+WINCA-ConfigHost -IPAddress $ip -HostName $hn -DNSIp $dns -ConfigurationData $ConfigData
