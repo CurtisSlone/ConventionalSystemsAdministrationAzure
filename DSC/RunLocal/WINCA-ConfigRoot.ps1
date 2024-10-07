@@ -34,7 +34,6 @@ Configuration WINCA-ConfigRoot
             # Keylength = 2048
             # HashAlgorithmName = "SHA256"
             # CACommonName = "$($DomainName.Split('.')[0]) Root CA"
-            # CADistinguishedNameSuffix = "DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
             # ValidityPeriodUnits = 25
             # ValidityPeriod = "Years"
             # LogDirectory = "C:\Windows\system32\CertLog\"

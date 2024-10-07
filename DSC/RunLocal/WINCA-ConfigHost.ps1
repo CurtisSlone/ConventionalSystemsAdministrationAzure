@@ -57,6 +57,21 @@ Configuration WINCA-ConfigHost
             Name = "ADCS-Cert-Authority"
             DependsOn = "[Computer]hostname"
         }
+
+        WindowsFeature 'RSATRoleTools'
+        {
+            Ensure = "Present"
+            Name = "RSAT-ADCS"
+            DependsOn = "[WindowsFeature]CA"
+        }
+
+        # WindowsFeature 'CA-Web-Svc'
+        # {
+        #     Ensure = "Present"
+        #     Name = "ADCS-Web-Enrollment"
+        #     DependsOn = "[Computer]hostname"
+        # }
+
     }
 
 }
