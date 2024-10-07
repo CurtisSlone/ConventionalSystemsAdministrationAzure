@@ -58,10 +58,17 @@ Configuration WINCA-ConfigHost
             DependsOn = "[Computer]hostname"
         }
 
-        WindowsFeature 'RSATRoleTools'
+        WindowsFeature 'RSATADCS'
         {
             Ensure = "Present"
             Name = "RSAT-ADCS"
+            DependsOn = "[WindowsFeature]CA"
+        }
+
+        WindowsFeature 'RSATADCSMGmt'
+        {
+            Ensure = "Present"
+            Name = "RSAT-ADCS-Mgmt"
             DependsOn = "[WindowsFeature]CA"
         }
 
