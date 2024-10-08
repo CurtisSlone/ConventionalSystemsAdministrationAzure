@@ -1,0 +1,6 @@
+First name,Last name,Display name,User logon name
+this,user,"user, this",this.user
+this,user,"user, this Domain Admin",this.user.da
+this,user,"user, this Enterprise Admin",this.user.ea
+this,user,"user, this Server Admin",this.user.sa
+this,user,"user, this Workstation Admin",this.user.ws
