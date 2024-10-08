@@ -72,6 +72,10 @@ Configuration WINCA-ConfigHost
             DependsOn = "[WindowsFeature]CA"
         }
 
+        #
+        # For Intermediate CAS
+        #
+        
         # WindowsFeature 'CA-Web-Svc'
         # {
         #     Ensure = "Present"

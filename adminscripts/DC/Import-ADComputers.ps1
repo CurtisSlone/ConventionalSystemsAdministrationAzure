@@ -15,7 +15,7 @@ foreach ($Computer in $Computers)
     try {
         $NewComputerParms = @{
             Name = $Computer.'ComputerName'
-            Path = "OU=Computers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+            Path = "CN=Computers,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
         }
 
         if(Get-ADComputer -Filter "Name -eq '$($Computer.'ComputerName')'")

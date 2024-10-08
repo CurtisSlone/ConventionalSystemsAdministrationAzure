@@ -18,13 +18,13 @@ Import-Module ActiveDirectory
 foreach ($User in $Users) {
     try {      
         $NewUserParams = @{
-            Name                  = "$($User.'First name') $($User.'Last name')"
+            Name                  = "$($User.'User logon name')"
             GivenName             = $User.'First name'
             Surname               = $User.'Last name'
             DisplayName           = $User.'Display name'
             SamAccountName        = $User.'User logon name'
-            UserPrincipalName     = "$($User.'User principal name')@$($DomainName)"
-            Path                  = "OU=Users,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
+            UserPrincipalName     = "$($User.'User logon name')@$($DomainName)"
+            Path                  = "$($User.'Path')CN=Users,DC=$($DomainName.Split('.')[0]),DC=$($DomainName.Split('.')[1])"
             AccountPassword       = (ConvertTo-SecureString "$Password" -AsPlainText -Force)
             Enabled               = $true 
             ChangePasswordAtLogon = $false 
