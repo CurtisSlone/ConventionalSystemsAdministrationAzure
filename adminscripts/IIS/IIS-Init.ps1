@@ -1,14 +1,16 @@
-New-Item -Name "C:\index.html"
+#
+# set policy for the whole system.
+#
+Set-ExecutionPolicy Unrestricted -Force
 
-@"
-<!DOCTYPE html>
-<html>
-<head>
-    <title>My Basic HTML Page</title>
-</head>
-<body>
-    <h1>Welcome to my website!</h1>
-    <p>This is a basic HTML page created using PowerShell.</p>
-</body>
-</html>
-"@ | Out-File -FilePath "C:\index.html"
+#
+# Install required DSC modules before we get started. 
+#
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+Install-PackageProvider -Name NuGet -Force
+Install-Module -Name PowerShellGet -Force
+Install-Module -Name ComputerManagementDSC -RequiredVersion 8.4.0 -Force
+Install-Module -Name NetworkingDsc -RequiredVersion 9.0.0 -Force
+
+
+exit 0

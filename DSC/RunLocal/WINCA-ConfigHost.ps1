@@ -76,12 +76,12 @@ Configuration WINCA-ConfigHost
         # For Intermediate CAS
         #
         
-        # WindowsFeature 'CA-Web-Svc'
-        # {
-        #     Ensure = "Present"
-        #     Name = "ADCS-Web-Enrollment"
-        #     DependsOn = "[Computer]hostname"
-        # }
+        WindowsFeature 'CA-Web-Svc'
+        {
+            Ensure = "Present"
+            Name = "ADCS-Web-Enrollment"
+            DependsOn = "[Computer]hostname"
+        }
 
     }
 

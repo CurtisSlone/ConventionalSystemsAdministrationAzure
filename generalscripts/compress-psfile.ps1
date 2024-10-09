@@ -8,6 +8,10 @@ $DSCFileArray = @(
     DestinationPath = ".\compressed\WINCA-DSC.zip"
   },
   @{
+    Path = ".\DSC\RunLocal\IIS-Config.ps1"
+    DestinationPath = ".\compressed\IIS-DSC.zip"
+  },
+  @{
     Path = ".\adminscripts\DC\"
     DestinationPath = ".\compressed\\DC.zip"
   },
